@@ -24,3 +24,5 @@ lint:
 
 test:
 	uv run pytest
+
+.PHONY: install dev start render-start build lint test
