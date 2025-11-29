@@ -13,3 +13,7 @@ CREATE TABLE IF NOT EXISTS url_checks (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+CREATE INDEX IF NOT EXISTS idx_url_checks_url_id ON url_checks(url_id);
+CREATE INDEX IF NOT EXISTS idx_url_checks_created_at ON url_checks(created_at DESC);

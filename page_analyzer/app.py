@@ -60,5 +60,21 @@ def url_detail(id):
     return render_template('url_detail.html', url=url_data, checks=checks)
 
 
+@app.route('/urls/<int:id>/checks', methods=['POST'])
+def check_url(id):
+    url_data = get_url_by_id(id)
+    if not url_data:
+        flash('Страница не найдена', 'danger')
+        return redirect(url_for('urls'))
+    
+    try:
+        add_url_check(url_id=id)
+        flash('Страница успешно проверена', 'success')
+    except Exception as e:
+        flash('Произошла ошибка при проверке', 'danger')
+    
+    return redirect(url_for('url_detail', id=id))
+
+
 if __name__ == '__main__':
     app.run()

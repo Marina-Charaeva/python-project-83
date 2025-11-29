@@ -57,12 +57,19 @@ def get_all_urls():
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT urls.*, 
-               MAX(url_checks.created_at) as last_check,
-               url_checks.status_code
+        SELECT 
+            urls.id,
+            urls.name,
+            urls.created_at,
+            MAX(url_checks.created_at) as last_check_date,
+            (SELECT status_code 
+             FROM url_checks 
+             WHERE url_id = urls.id 
+             ORDER BY created_at DESC 
+             LIMIT 1) as last_check_status
         FROM urls 
         LEFT JOIN url_checks ON urls.id = url_checks.url_id
-        GROUP BY urls.id, url_checks.status_code
+        GROUP BY urls.id, urls.name, urls.created_at
         ORDER BY urls.id DESC
     """)
     urls = cur.fetchall()
@@ -77,19 +84,29 @@ def add_url_check(url_id, status_code=None, h1=None, title=None, description=Non
     cur.execute(
         """INSERT INTO url_checks 
         (url_id, status_code, h1, title, description) 
-        VALUES (%s, %s, %s, %s, %s)""",
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING id, created_at""",
         (url_id, status_code, h1, title, description)
     )
+    result = cur.fetchone()
     conn.commit()
     cur.close()
     conn.close()
+    return result
 
 
 def get_url_checks(url_id):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT * FROM url_checks 
+        SELECT 
+            id,
+            status_code,
+            h1,
+            title,
+            description,
+            created_at
+        FROM url_checks 
         WHERE url_id = %s 
         ORDER BY id DESC
     """, (url_id,))
@@ -97,3 +114,19 @@ def get_url_checks(url_id):
     cur.close()
     conn.close()
     return checks
+
+
+def get_last_check(url_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT created_at, status_code
+        FROM url_checks 
+        WHERE url_id = %s 
+        ORDER BY created_at DESC 
+        LIMIT 1
+    """, (url_id,))
+    result = cur.fetchone()
+    cur.close()
+    conn.close()
+    return result

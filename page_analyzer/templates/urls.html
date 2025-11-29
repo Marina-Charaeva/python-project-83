@@ -24,7 +24,11 @@
                         {{ url[1] }}
                     </a>
                 </td>
-                <td>{{ url[3].strftime('%Y-%m-%d') if url[3] else '' }}</td>
+                <td>
+                    {% if url[3] %}
+                        {{ url[3].strftime('%Y-%m-%d') }}
+                    {% endif %}
+                </td>
                 <td>{{ url[4] if url[4] else '' }}</td>
             </tr>
             {% endfor %}
