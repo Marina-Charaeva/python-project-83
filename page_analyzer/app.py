@@ -6,6 +6,7 @@ from .data_base import (
     get_all_urls, add_url_check, get_url_checks
 )
 from .normalize_url import normalize_url, validate_url
+from .parser import parser
 
 load_dotenv()
 
