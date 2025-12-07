@@ -10,7 +10,7 @@ from .checker import check_website, CheckError
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='page_analyzer/templates')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 
 
@@ -70,6 +70,7 @@ def check_url(id):
     
     try:
         # Получаем URL из данных базы
+        
         url_name = url_data[1]  # Индекс 1 соответствует полю 'name' в БД
         
         # Выполняем настоящую проверку сайта
