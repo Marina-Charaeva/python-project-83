@@ -1,17 +1,25 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
-from .data_base import (
-    add_url, get_url_by_id, get_url_by_name, 
-    get_all_urls, add_url_check, get_url_checks
-)
-from .normalize_url import normalize_url, validate_url
-from .checker import check_website, CheckError
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent
 
 load_dotenv()
 
-app = Flask(__name__, template_folder='page_analyzer/templates')
+app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'))
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
+
+try:
+    from .data_base import (
+        add_url, get_url_by_id, get_url_by_name, 
+        get_all_urls, add_url_check, get_url_checks
+    )
+    from .normalize_url import normalize_url, validate_url
+    from .checker import check_website, CheckError
+except ImportError as e:
+    print(f"Ошибка импорта: {e}")
+    raise
 
 
 @app.route('/')

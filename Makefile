@@ -25,4 +25,7 @@ lint:
 test:
 	uv run pytest
 
+test-run:
+	uv run gunicorn -w 1 -b 0.0.0.0:5000 page_analyzer:app --timeout 60
+
 .PHONY: install dev start render-start build lint test
