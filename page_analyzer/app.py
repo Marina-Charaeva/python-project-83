@@ -53,7 +53,7 @@ def add_url_page():
         url_id = add_url(normalized_url)
         flash('Страница успешно добавлена', 'success')
         return redirect(url_for('url_detail', id=url_id))
-    except Exception as e:
+    except Exception:
         flash('Произошла ошибка при добавлении страницы', 'danger')
         return render_template('index.html', url=url), 422
 
@@ -98,7 +98,7 @@ def check_url(id):
     except CheckError as e:
         # Обрабатываем ошибки проверки
         flash(str(e), 'danger')
-    except Exception as e:
+    except Exception:
         # Обрабатываем все остальные ошибки
         flash('Произошла ошибка при проверке', 'danger')
     

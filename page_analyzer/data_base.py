@@ -1,5 +1,4 @@
 import psycopg2
-from datetime import datetime
 import os
 from dotenv import load_dotenv
 
@@ -78,7 +77,12 @@ def get_all_urls():
     return urls
 
 
-def add_url_check(url_id, status_code=None, h1=None, title=None, description=None):
+def add_url_check(
+        url_id,
+        status_code=None,
+        h1=None, title=None,
+        description=None
+):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(

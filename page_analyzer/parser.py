@@ -19,6 +19,9 @@ def get_data(content: str) -> dict:
     meta = soup.find('meta', attrs={'name': 'description'})
     if meta:  
         description_content = meta.get('content', '')
-        data['description'] = description_content.strip()[:255] if description_content else ''
+        if description_content:
+            data['description'] = description_content.strip()[:255]
+        else:
+            data['description'] = ''
     
     return data
