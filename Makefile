@@ -3,9 +3,6 @@ PORT ?= 8000
 install:
 	uv sync
 dev:
-	uv run flask --debug --app page_analyzer:app run
-
-dev-external:
 	uv run flask --debug --app page_analyzer:app run --host=0.0.0.0 --port=5000
 
 start:
