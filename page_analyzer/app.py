@@ -6,7 +6,7 @@ from .data_base import (
     get_all_urls, add_url_check, get_url_checks
 )
 from .normalize_url import normalize_url, validate_url
-from .parser import parser
+from .checker import check_website, CheckError
 
 load_dotenv()
 
@@ -69,12 +69,36 @@ def check_url(id):
         return redirect(url_for('urls'))
     
     try:
-        add_url_check(url_id=id)
+        # Получаем URL из данных базы
+        url_name = url_data[1]  # Индекс 1 соответствует полю 'name' в БД
+        
+        # Выполняем настоящую проверку сайта
+        check_data = check_website(url_name)
+        
+        # Сохраняем проверку с реальными данными
+        add_url_check(
+            url_id=id,
+            status_code=check_data['status_code'],
+            h1=check_data['h1'],
+            title=check_data['title'],
+            description=check_data['description']
+        )
+        
         flash('Страница успешно проверена', 'success')
+        
+    except CheckError as e:
+        # Обрабатываем ошибки проверки
+        flash(str(e), 'danger')
     except Exception as e:
+        # Обрабатываем все остальные ошибки
         flash('Произошла ошибка при проверке', 'danger')
     
     return redirect(url_for('url_detail', id=id))
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('errors/404.html'), 404
 
 
 if __name__ == '__main__':
