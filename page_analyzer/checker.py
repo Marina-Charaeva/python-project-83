@@ -10,37 +10,37 @@ def check_website(url):
     try:
         # Выполняем GET-запрос с таймаутом 
         response = requests.get(url, timeout=10)
-        response.raise_for_status()
+        response.raise_for_status()  # Вызовет HTTPError для 4xx/5xx
         
-        # Парсим HTML с помощью парсера
+        # Парсим HTML
         check_data = get_data(response.text)
         check_data['status_code'] = response.status_code
         
         return check_data
         
     except requests.exceptions.HTTPError as e:
-        # Обрабатываем HTTP ошибки (4xx, 5xx) 
-        if hasattr(e.response, 'status_code') and 500 <= e.response.status_code <= 599:
-            # Серверные ошибки 5xx - не создаем проверку 
-            raise CheckError(f'Сервер ответил с ошибкой {e.response.status_code}')
+        if hasattr(e.response, 'status_code'):
+            status_code = e.response.status_code
+            # 5xx ошибки - не создаем проверку
+            if 500 <= status_code <= 599:
+                raise CheckError('Произошла ошибка при проверке')
+            else:
+                # 4xx ошибки - все равно создаем проверку
+                return {
+                    'status_code': status_code,
+                    'h1': '',
+                    'title': '',
+                    'description': ''
+                }
         else:
-            # Клиентские ошибки 4xx - все равно создаем проверку
-            return {
-                'status_code': e.response.status_code,
-                'h1': '',
-                'title': '',
-                'description': ''
-            }
+            raise CheckError('Произошла ошибка при проверке')
             
-    except RequestException as e:
-        # Обрабатываем сетевые ошибки 
-        raise CheckError('Не удалось подключиться к сайту')
+    except RequestException:
+        raise CheckError('Произошла ошибка при проверке')
     
-    except Exception as e:
-        # Обрабатываем все остальные ошибки
-        raise CheckError('Произошла непредвиденная ошибка при проверке')
+    except Exception:
+        raise CheckError('Произошла ошибка при проверке')
 
 
 class CheckError(Exception):
-    """Кастомное исключение для ошибок проверки"""
     pass
