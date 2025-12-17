@@ -1,7 +1,8 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
+from flask import Flask, flash, redirect, render_template, request, url_for
 
 BASE_DIR = Path(__file__).parent
 
@@ -11,12 +12,16 @@ app = Flask(__name__, template_folder=str(BASE_DIR / 'templates'))
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 
 try:
+    from .checker import CheckError, check_website
     from .data_base import (
-        add_url, get_url_by_id, get_url_by_name, 
-        get_all_urls, add_url_check, get_url_checks
+        add_url,
+        add_url_check,
+        get_all_urls,
+        get_url_by_id,
+        get_url_by_name,
+        get_url_checks,
     )
     from .normalize_url import normalize_url, validate_url
-    from .checker import check_website, CheckError
 except ImportError as e:
     print(f"Ошибка импорта: {e}")
     raise

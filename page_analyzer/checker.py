@@ -1,5 +1,6 @@
 import requests
 from requests.exceptions import RequestException
+
 from .parser import get_data
 
 
